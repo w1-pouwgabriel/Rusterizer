@@ -1,10 +1,19 @@
-use glam::Vec2;
+use glam::{Vec2};
 
 pub fn to_argb32(a: u8, r: u8, g: u8, b: u8) -> u32{
     let mut color:u32 = a as u32;
     color = (color << 8) + r as u32;
     color = (color << 8) + g as u32;
     color = (color << 8) + b as u32;
+    
+    color
+}
+
+pub fn from_vec_to_argb32(color_vec: glam::Vec3) -> u32{
+    let mut color:u32 = 255 as u32;
+    color = (color << 8) + (color_vec.x * 255.99) as u32;
+    color = (color << 8) + (color_vec.y * 255.99) as u32;
+    color = (color << 8) + (color_vec.z * 255.99) as u32;
     
     color
 }

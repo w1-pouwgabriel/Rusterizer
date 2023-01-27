@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "${workspaceFolder}/rusterizer/target/debug/rusterizer.exe",
-            "args": [],
+            "args": ["cargo run"],
             "cwd": "${workspaceFolder}"
         }
     ]
