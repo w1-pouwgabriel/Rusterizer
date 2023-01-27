@@ -1,6 +1,8 @@
 use glam::{Vec2, Vec3};
 use std::ops::{Add, Mul, Sub};
 
+use crate::utils;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vertex {
     pub position: Vec3,
@@ -49,4 +51,20 @@ impl Mul<f32> for Vertex {
         let uv = self.uv * rhs;
         Self::new(position, color, uv)
     }
+}
+
+#[test]
+fn lerping() {
+    let v0 = Vertex {
+        position: glam::vec3(100.0, 100.0, 0.0),
+        color: glam::vec3(0.0, 1.0, 1.0),
+        uv: glam::vec2(0.0, 0.0),
+    };
+    let v1 = Vertex {
+        position: glam::vec3(100.0, 400.0, 0.0),
+        color: glam::vec3(1.0, 0.0, 0.0),
+        uv: glam::vec2(0.0, 1.0),
+    };
+    let interpolated = utils::lerp(v0, v1, 0.5);
+    assert_eq!(interpolated.uv.y, 0.5);
 }
