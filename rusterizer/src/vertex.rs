@@ -1,8 +1,6 @@
 use glam::{Vec2, Vec3};
 use std::ops::{Add, Mul, Sub};
 
-use crate::utils;
-
 #[derive(Debug, Copy, Clone)]
 pub struct Vertex {
     pub position: Vec3,
@@ -53,8 +51,10 @@ impl Mul<f32> for Vertex {
     }
 }
 
+
 #[test]
 fn lerping() {
+use crate::utils; // Only used to do unit testing
     let v0 = Vertex {
         position: glam::vec3(100.0, 100.0, 0.0),
         color: glam::vec3(0.0, 1.0, 1.0),
