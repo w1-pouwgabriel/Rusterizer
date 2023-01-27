@@ -1,4 +1,5 @@
 use std::str::FromStr;
+
 extern crate minifb;
 
 pub struct Window {
@@ -54,7 +55,6 @@ impl Window {
         self.frame_buffer = FrameBuffer::new(width, height);
     }
 }
-
 pub struct FrameBuffer {
     data: Vec<u32>,
     width: usize,
@@ -68,23 +68,11 @@ impl FrameBuffer {
             height: height
         }
     }
-    pub fn set_pixel(&mut self, x: usize, y: usize, value: u32) {
-        self.data[y * self.width + x] = value;
-    }
-    pub fn get_pixel(&mut self, x: usize, y: usize) -> u32 {
-        self.data[y * self.width + x]
-    }
     pub fn width(&self) -> usize {
         self.width
     }
     pub fn height(&self) -> usize {
         self.height
-    }
-    pub fn get_data(&self) -> &Vec<u32>{
-        &self.data
-    }
-    pub fn iter(&self) -> core::slice::Iter<u32> {
-        self.data.iter()
     }
     pub fn iter_mut(&mut self) -> core::slice::IterMut<'_, u32> {
         self.data.iter_mut()
