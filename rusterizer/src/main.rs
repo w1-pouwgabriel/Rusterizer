@@ -1,7 +1,8 @@
 extern crate minifb;
 
-mod texture;
-mod triangle;
+#[path = "resources/texture.rs"] pub mod texture;
+#[path = "graphics/triangle.rs"] mod triangle;
+#[path = "math/transform.rs"] mod transform;
 mod window;
 mod utils;
 mod vertex;
@@ -11,6 +12,7 @@ use window::Window;
 use vertex::Vertex;
 use texture::Texture;
 use utils::*;
+use transform::Transform;
 
 use std::path::Path;
 
@@ -19,9 +21,7 @@ const HEIGHT: usize = 500;
 
 fn main() {
     let mut window = Window::new("Rusterizer - ESC to exit".to_string(), WIDTH, HEIGHT);
-
     let mut z_buffer;
-
     let texture = Texture::load(Path::new("assets/Hackerman.jpg"));
 
     let v0 = Vertex {
