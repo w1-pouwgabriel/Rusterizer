@@ -60,7 +60,7 @@ fn main() {
         z_buffer = vec![f32::INFINITY; window.frame_buffer().width() * window.frame_buffer().height()];
         window_size = glam::vec2(window.frame_buffer().width() as f32, window.frame_buffer().height() as f32);
 
-        mesh.raster_mesh(&texture, window.frame_buffer(), &mut z_buffer, window_size);
+        mesh.raster_mesh(Some(&texture), window.frame_buffer(), &mut z_buffer, window_size);
 
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window.display();
