@@ -7,13 +7,16 @@ mod utils;
 #[path = "graphics/triangle.rs"] mod triangle;
 #[path = "graphics/vertex.rs"] mod vertex;
 #[path = "graphics/mesh.rs"] mod mesh;
+#[path = "graphics/camera.rs"] mod camera;
 
+use transform::Transform;
 use window::Window;
 use vertex::Vertex;
 use texture::Texture;
 use mesh::Mesh;
+use camera::Camera;
 
-use std::path::Path;
+use std::path::{Path, self};
 
 const WIDTH: usize = 500;
 const HEIGHT: usize = 500;
@@ -51,6 +54,15 @@ fn main() {
 
     let mesh = Mesh::from_vertices(&triangles, &vertices);
 
+    let aspect_ratio = WIDTH as f32 / HEIGHT as f32;
+
+    let mut _camera = Camera {
+        aspect_ratio,
+        transform: Transform::from_translation(glam::vec3(0.0, 0.0, 500.0)),
+        frustum_far: 1000.0,
+        ..Default::default()
+    };
+
     // Limit to max ~60 fps update rate
     window.limit_fps(Some(60));
 
@@ -59,6 +71,14 @@ fn main() {
         //Clear z_buffer
         z_buffer = vec![f32::INFINITY; window.frame_buffer().width() * window.frame_buffer().height()];
         window_size = glam::vec2(window.frame_buffer().width() as f32, window.frame_buffer().height() as f32);
+
+        _camera.update_settings(
+            None,
+            None,
+            None,
+            None,
+            None,
+            None);
 
         mesh.raster_mesh(Some(&texture), window.frame_buffer(), &mut z_buffer, window_size);
 
