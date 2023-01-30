@@ -15,11 +15,10 @@ impl Window {
             window: window,
             frame_buffer: FrameBuffer::new(width, height)
         };
-        match minifb::Icon::from_str("assets/rust.ico") {
-            Ok(icon) => {
-                window.window.set_icon(icon);
-            },
-            Err(_) => {}
+        if let Ok(icon) = minifb::Icon::from_str("assets/rust.ico") {
+            window.window.set_icon(icon);
+        }else{
+            println!("Could not load icon");
         }
         window
     }

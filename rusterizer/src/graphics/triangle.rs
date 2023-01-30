@@ -23,9 +23,9 @@ impl Triangle{
 
     pub fn raster_triangle(
         &self, 
-        texture: &Texture,
-        buffer: &mut FrameBuffer, 
-        depth_buffer: &mut Vec<f32>,
+        texture: Option<&Texture>,
+        buffer: &mut FrameBuffer,
+        depth_buffer: &mut [f32],
         viewport_size: Vec2
     ){
         let width = buffer.width();
@@ -44,8 +44,17 @@ impl Triangle{
                     if depth < depth_buffer[i] {
                         depth_buffer[i] = depth;
 
-                        let tex_coords = bary.x * self.v0.uv + bary.y * self.v1.uv + bary.z * self.v2.uv;
-                        let color = texture.argb_at_uv(tex_coords.x, tex_coords.y);
+                        let color = bary.x * self.v0.color + bary.y * self.v1.color + bary.z * self.v2.color;
+                        let mut color = to_argb32(
+                            255,
+                            (color.x * 255.0) as u8,
+                            (color.y * 255.0) as u8,
+                            (color.z * 255.0) as u8,
+                        );
+                        if let Some(tex) = texture {
+                            let tex_coords = bary.x * self.v0.uv + bary.y * self.v1.uv + bary.z * self.v2.uv;
+                            color = tex.argb_at_uv(tex_coords.x, tex_coords.y);
+                        }
 
                         *pixel = color;
                     };

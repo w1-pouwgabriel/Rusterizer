@@ -23,7 +23,7 @@ fn main() {
     let mut window_size = glam::vec2(window.frame_buffer().width() as f32, window.frame_buffer().height() as f32);
 
     let mut z_buffer;                                               //Maybe add this variable to some sort of graphics pipeline???
-    let texture = Texture::load(Path::new("assets/Hackerman.jpg"));  //TODO: Add some resource manager
+    let texture = Texture::load(Path::new("assets/uv_mapper.jpg"));  //TODO: Add some resource manager
 
     let v0 = Vertex {
         position: glam::vec3(100.0, 100.0, 0.0),
@@ -46,11 +46,10 @@ fn main() {
         uv: glam::vec2(1.0, 0.0),
     };
 
-    let mut triangles = vec![glam::uvec3(0, 1, 2), glam::uvec3(0, 2, 3)];
-    let mut vertices = vec![v0, v1, v2, v3];
+    let triangles = vec![glam::uvec3(0, 1, 2), glam::uvec3(0, 2, 3)];
+    let vertices = vec![v0, v1, v2, v3];
 
-    let mut mesh = Mesh::new();
-    mesh.add_section_from_vertices(&mut triangles, &mut vertices);
+    let mesh = Mesh::from_vertices(&triangles, &vertices);
 
     // Limit to max ~60 fps update rate
     window.limit_fps(Some(60));

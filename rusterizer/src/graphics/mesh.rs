@@ -31,19 +31,22 @@ impl Mesh{
         ]
     }
 
-    // quite unsafe but for now it will do :)
-    pub fn add_section_from_vertices(
-        &mut self,
-        triangles: &mut Vec<UVec3>,
-        vertices: &mut Vec<Vertex>,
-    ) {
-        self.triangles.append(triangles);
-        self.vertices.append(vertices);
+    pub fn from_vertices(triangles: &[UVec3], vertices: &[Vertex]) -> Self {
+        let mut mesh = Mesh::new();
+        mesh.add_section_from_vertices(triangles, vertices);
+        mesh
+    }
+
+    pub fn add_section_from_vertices(&mut self, triangles: &[UVec3], vertices: &[Vertex]) {
+        let offset = self.vertices.len() as u32;
+        let triangles: Vec<UVec3> = triangles.iter().map(|tri| *tri + offset).collect();
+        self.triangles.extend_from_slice(&triangles);
+        self.vertices.extend_from_slice(vertices);
     }
 
     pub fn raster_mesh(
         &self,
-        texture: &Texture,
+        texture: Option<&Texture>,
         buffer: &mut FrameBuffer,
         z_buffer: &mut Vec<f32>,
         viewport_size: Vec2
