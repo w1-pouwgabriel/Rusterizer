@@ -40,10 +40,8 @@ pub fn index_to_coords(p: usize, width: usize) -> (usize, usize) {
 }
 
 pub fn aabb_check(min: Vec2, max: Vec2, point: Vec2) -> bool {
-    if point.x > min.x && point.y > min.y {
-        if point.y < max.y && point.y < max.y{
-            return true;
-        }
+    if point.x > min.x && point.y > min.y && point.x < max.x && point.y < max.y{
+        return true;
     }
 
     false

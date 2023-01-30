@@ -1,4 +1,4 @@
-use glam::Vec3Swizzles;
+use glam::{Vec3Swizzles, Vec2};
 use crate::{vertex, utils::*, window::{FrameBuffer}, texture::Texture};
 
 pub struct Triangle{
@@ -25,7 +25,8 @@ impl Triangle{
         &self, 
         texture: &Texture,
         buffer: &mut FrameBuffer, 
-        depth_buffer: &mut Vec<f32>
+        depth_buffer: &mut Vec<f32>,
+        viewport_size: Vec2
     ){
         let width = buffer.width();
         for (i, pixel) in buffer.iter_mut().enumerate() {
