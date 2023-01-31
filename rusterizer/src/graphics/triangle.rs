@@ -80,7 +80,8 @@ impl Triangle{
             if let Some(bary) = barycentric_coordinates(coords, sc0, sc1, sc2, area) {
                 let correction = bary.x * rec0 + bary.y * rec1 + bary.z * rec2;
                 let correction = 1.0 / correction;
-                let depth = bary.x * self.v0.position.z + bary.y * self.v1.position.z + bary.z * self.v2.position.z;
+                //let depth = bary.x * self.v0.position.z + bary.y * self.v1.position.z + bary.z * self.v2.position.z;
+                let depth = bary.x * ndc0.z + bary.y * ndc1.z + bary.z * ndc2.z;
                 if depth < depth_buffer[i] {
                     depth_buffer[i] = depth;
                     let color = bary.x * color0 + bary.y * color1 + bary.z * color2;

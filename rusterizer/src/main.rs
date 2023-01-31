@@ -18,8 +18,8 @@ use camera::Camera;
 
 use std::path::{Path, self};
 
-const WIDTH: usize = 720;
-const HEIGHT: usize = 480;
+const WIDTH: usize = 500;
+const HEIGHT: usize = 500;
 
 fn main() {
     let mut window = Window::new("Rusterizer - ESC to exit".to_string(), WIDTH, HEIGHT);
@@ -65,7 +65,7 @@ fn main() {
     // Limit to max ~60 fps update rate
     window.limit_fps(Some(60));
 
-    let mut rot = 0.0;
+    let mut rot = std::f32::consts::FRAC_PI_4;
     while !window.should_close() {
 
         let (width, height) = window.frame_buffer().size();
@@ -74,11 +74,22 @@ fn main() {
         window.frame_buffer().clear();
         let window_size = glam::vec2(width as f32, height as f32);
 
-        let transform =
-            Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, rot, rot, rot));
+        let transform0 =
+            Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, rot, 0.0, 0.0));
+        let transform1 =
+            Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, -rot, 0.0, 0.0));
 
         mesh.raster_mesh(        
-            &transform.local(),
+            &transform0.local(),
+            &camera.view(),
+            &camera.projection(),
+            Some(&texture),
+            window.frame_buffer(),
+            &mut z_buffer,
+            window_size);
+
+        mesh.raster_mesh(        
+            &transform1.local(),
             &camera.view(),
             &camera.projection(),
             Some(&texture),
