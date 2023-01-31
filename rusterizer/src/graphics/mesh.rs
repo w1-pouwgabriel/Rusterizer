@@ -1,4 +1,4 @@
-use glam::{UVec3, Vec2};
+use glam::{UVec3, Vec2, Mat4};
 
 use crate::{vertex::Vertex, triangle::Triangle, texture::Texture, window::FrameBuffer};
 
@@ -46,6 +46,9 @@ impl Mesh{
 
     pub fn raster_mesh(
         &self,
+        model: &Mat4,
+        view: &Mat4,
+        projection: &Mat4,
         texture: Option<&Texture>,
         buffer: &mut FrameBuffer,
         z_buffer: &mut Vec<f32>,
@@ -56,6 +59,9 @@ impl Mesh{
             let triangle = Triangle::new(*vertices[0], *vertices[1], *vertices[2]);
 
             triangle.raster_triangle(
+                model,
+                view,
+                projection,
                 texture,
                 buffer,
                 z_buffer,

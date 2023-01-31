@@ -5,20 +5,20 @@
             "name": "Debug",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/rusterizer/target/debug/rusterizer.exe",
+            "program": "${workspaceFolder}/target/debug/rusterizer.exe",
             "args": [
             ],
-            "cwd": "${workspaceFolder}/rusterizer",
+            "cwd": "${workspaceFolder}",
             "preLaunchTask": "cargo build"
         },
         {
             "name": "Release",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/rusterizer/target/release/rusterizer.exe",
+            "program": "${workspaceFolder}/target/release/rusterizer.exe",
             "args": [
             ],
-            "cwd": "${workspaceFolder}/rusterizer",
+            "cwd": "${workspaceFolder}",
             "preLaunchTask": "cargo build release"
         }
     ]

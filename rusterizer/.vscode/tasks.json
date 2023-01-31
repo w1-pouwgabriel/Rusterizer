@@ -24,7 +24,7 @@
                 "$rustc"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/rusterizer/"
+                "cwd": "${workspaceFolder}/"
             },
         },
         {
@@ -38,7 +38,7 @@
                 "$rustc"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/rusterizer/"
+                "cwd": "${workspaceFolder}/"
             },
         }
     ]

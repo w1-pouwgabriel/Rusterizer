@@ -43,7 +43,8 @@ impl Window {
     }
     
     pub fn display(&mut self) {
-        self.window.update_with_buffer(&self.frame_buffer.data, self.frame_buffer.width(), self.frame_buffer.height()).expect("Failed to display frame buffer.");
+        let (width, height) = self.frame_buffer.size();
+        self.window.update_with_buffer(&self.frame_buffer.data, width, height).expect("Failed to display frame buffer.");
         let (width, height) = self.window.get_size();
         if width != self.frame_buffer.width || height != self.frame_buffer.height {
             self.on_resize(width, height);
@@ -67,12 +68,11 @@ impl FrameBuffer {
             height: height
         }
     }
-    pub fn width(&self) -> usize {
-        self.width
+
+    pub fn size(&self) -> (usize, usize) {
+        (self.width, self.height)
     }
-    pub fn height(&self) -> usize {
-        self.height
-    }
+
     pub fn iter_mut(&mut self) -> core::slice::IterMut<'_, u32> {
         self.data.iter_mut()
     }
