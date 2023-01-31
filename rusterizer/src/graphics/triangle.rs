@@ -37,12 +37,24 @@ impl Triangle{
         let clip1 = mvp * Vec4::from((self.v1.position, 1.0));
         let clip2 = mvp * Vec4::from((self.v2.position, 1.0));
 
+        let rec0 = 1.0 / clip0.w;
+        let rec1 = 1.0 / clip1.w;
+        let rec2 = 1.0 / clip2.w;
+    
+        let uv0 = self.v0.uv * rec0;
+        let uv1 = self.v1.uv * rec1;
+        let uv2 = self.v2.uv * rec2;
+    
+        let color0 = self.v0.color * rec0;
+        let color1 = self.v1.color * rec1;
+        let color2 = self.v2.color * rec2;
+
         // This would be the output of the vertex shader (clip space)
         // then we perform perspective division to transform in ndc
         // now x,y,z componend of ndc are between -1 and 1
-        let ndc0 = clip0 / clip0.w;
-        let ndc1 = clip1 / clip1.w;
-        let ndc2 = clip2 / clip2.w;
+        let ndc0 = clip0 * rec0;
+        let ndc1 = clip1 * rec1;
+        let ndc2 = clip2 * rec2;
 
         // screeen coordinates remapped to window
         let sc0 = glam::vec2(
@@ -66,10 +78,13 @@ impl Triangle{
             let area = edge_function(sc0, sc1, sc2);
 
             if let Some(bary) = barycentric_coordinates(coords, sc0, sc1, sc2, area) {
+                let correction = bary.x * rec0 + bary.y * rec1 + bary.z * rec2;
+                let correction = 1.0 / correction;
                 let depth = bary.x * self.v0.position.z + bary.y * self.v1.position.z + bary.z * self.v2.position.z;
                 if depth < depth_buffer[i] {
                     depth_buffer[i] = depth;
-                    let color = bary.x * self.v0.color + bary.y * self.v1.color + bary.z * self.v2.color;
+                    let color = bary.x * color0 + bary.y * color1 + bary.z * color2;
+                    let color = color * correction;
                     let mut color = to_argb32(
                         255,
                         (color.x * 255.0) as u8,
@@ -77,7 +92,8 @@ impl Triangle{
                         (color.z * 255.0) as u8,
                     );
                     if let Some(tex) = texture {
-                        let tex_coords = bary.x * self.v0.uv + bary.y * self.v1.uv + bary.z * self.v2.uv;
+                        let tex_coords = bary.x * uv0 + bary.y * uv1 + bary.z * uv2;
+                        let tex_coords = tex_coords * correction;
                         color = tex.argb_at_uv(tex_coords.x, tex_coords.y);
                     }
 

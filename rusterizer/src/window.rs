@@ -76,4 +76,8 @@ impl FrameBuffer {
     pub fn iter_mut(&mut self) -> core::slice::IterMut<'_, u32> {
         self.data.iter_mut()
     }
+
+    pub fn clear(&mut self){
+        self.data = vec![0; self.width * self.height];
+    }
 }

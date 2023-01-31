@@ -48,7 +48,7 @@ fn main() {
         uv: glam::vec2(1.0, 1.0),
     };
 
-    let triangles = vec![glam::uvec3(2, 1, 0), glam::uvec3(3, 2, 0)];
+    let triangles = vec![glam::uvec3(2, 1, 0), glam::uvec3(3, 2, 0)]; 
     let vertices = vec![v0, v1, v2, v3];
 
     let mesh = Mesh::from_vertices(&triangles, &vertices);
@@ -57,7 +57,7 @@ fn main() {
 
     let camera = Camera {
         aspect_ratio,
-        transform: Transform::from_translation(glam::vec3(0.0, 0.0, 5.0)),
+        transform: Transform::from_translation(glam::vec3(0.0, 0.0, 8.0)),
         frustum_far: 100.0,
         ..Default::default()
     };
@@ -65,15 +65,20 @@ fn main() {
     // Limit to max ~60 fps update rate
     window.limit_fps(Some(60));
 
+    let mut rot = 0.0;
     while !window.should_close() {
 
         let (width, height) = window.frame_buffer().size();
         //Clear buffer
         z_buffer = vec![f32::INFINITY; width * height];
+        window.frame_buffer().clear();
         let window_size = glam::vec2(width as f32, height as f32);
 
+        let transform =
+            Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, rot, rot, rot));
+
         mesh.raster_mesh(        
-            &Transform::IDENTITY.local(),
+            &transform.local(),
             &camera.view(),
             &camera.projection(),
             Some(&texture),
@@ -81,6 +86,7 @@ fn main() {
             &mut z_buffer,
             window_size);
 
+            rot += 0.05;
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window.display();
     }
