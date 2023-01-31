@@ -1,11 +1,5 @@
 ### Installation
 
-If you want to use it, (and not bother with code), use this command:
-
-```
-cargo install rusterizer
-```
-
 For contributing:
 
 ```
@@ -20,3 +14,4 @@ windows:
 cargo build --release
 cargo run --release
 ```
+you can also build and run the project with '--release' but it will be slower.
