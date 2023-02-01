@@ -1,7 +1,9 @@
 use glam::{UVec3, Vec2, Mat4};
 
 use crate::{vertex::Vertex, triangle::Triangle, texture::Texture, window::FrameBuffer};
+use std::ops::{Add, AddAssign};
 
+#[derive(Debug, Clone)]
 pub struct Mesh{
     triangles: Vec<UVec3>,
     vertices: Vec<Vertex>,
@@ -46,22 +48,24 @@ impl Mesh{
 
     pub fn raster_mesh(
         &self,
-        model: &Mat4,
-        view: &Mat4,
-        projection: &Mat4,
+        mvp: &Mat4,
         texture: Option<&Texture>,
         buffer: &mut FrameBuffer,
         z_buffer: &mut Vec<f32>,
-        viewport_size: Vec2
+        viewport_size: Vec2,
+
     ) {
         for triangle in self.triangles() {
             let vertices = self.get_vertices_from_triangle(*triangle);
+
+            //Go over every vertex to check if they need to be culled or not    (1)
+            //  If 2 vertices fall inside the box than clip                     (2)
+            //      rasterize                                                   (3)
+
             let triangle = Triangle::new(*vertices[0], *vertices[1], *vertices[2]);
 
             triangle.raster_triangle(
-                model,
-                view,
-                projection,
+                mvp,
                 texture,
                 buffer,
                 z_buffer,
@@ -76,5 +80,21 @@ impl Mesh{
 impl Default for Mesh {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl Add for Mesh {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        let mut result = Self::from_vertices(self.triangles(), self.vertices());
+        result.add_section_from_vertices(rhs.triangles(), rhs.vertices());
+        result
+    }
+}
+
+impl AddAssign for Mesh {
+    fn add_assign(&mut self, rhs: Self) {
+        self.add_section_from_vertices(rhs.triangles(), rhs.vertices());
     }
 }

@@ -37,6 +37,10 @@ impl Window {
     pub fn should_close(&mut self) -> bool {
         !self.window.is_open()
     }
+
+    pub fn window(&mut self) -> &minifb::Window {
+        &self.window
+    }
     
     pub fn frame_buffer(&mut self) -> &mut FrameBuffer {
         &mut self.frame_buffer
@@ -67,6 +71,10 @@ impl FrameBuffer {
             width: width,
             height: height
         }
+    }
+
+    pub fn set_pixel(&mut self, x: usize, y: usize, value: u32) {
+        self.data[y * self.width + x] = value;
     }
 
     pub fn size(&self) -> (usize, usize) {
