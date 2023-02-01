@@ -1,15 +1,63 @@
-use glam::{UVec3, Vec2, Mat4};
+use glam::{Mat4, UVec3, Vec2};
 
-use crate::{vertex::Vertex, triangle::Triangle, texture::Texture, window::FrameBuffer};
+use crate::{texture::Texture, triangle::Triangle, vertex::Vertex, window::FrameBuffer};
 use std::ops::{Add, AddAssign};
 
+pub enum ClipResult {
+    None,
+    One(Triangle),
+}
+
+//View Frustum Culling
+pub fn cull_triangle_view_frustum(triangle: &Triangle) -> ClipResult {
+    // cull tests against the 6 planes
+    if triangle.v0.position.x > triangle.v0.position.w
+        && triangle.v1.position.x > triangle.v1.position.w
+        && triangle.v2.position.x > triangle.v2.position.w
+    {
+        return ClipResult::None;
+    }
+    if triangle.v0.position.x < -triangle.v0.position.w
+        && triangle.v1.position.x < -triangle.v1.position.w
+        && triangle.v2.position.x < -triangle.v2.position.w
+    {
+        return ClipResult::None;
+    }
+    if triangle.v0.position.y > triangle.v0.position.w
+        && triangle.v1.position.y > triangle.v1.position.w
+        && triangle.v2.position.y > triangle.v2.position.w
+    {
+        return ClipResult::None;
+    }
+    if triangle.v0.position.y < -triangle.v0.position.w
+        && triangle.v1.position.y < -triangle.v1.position.w
+        && triangle.v2.position.y < -triangle.v2.position.w
+    {
+        return ClipResult::None;
+    }
+    if triangle.v0.position.z > triangle.v0.position.w
+        && triangle.v1.position.z > triangle.v1.position.w
+        && triangle.v2.position.z > triangle.v2.position.w
+    {
+        return ClipResult::None;
+    }
+    if triangle.v0.position.z < 0.0
+        && triangle.v1.position.z < 0.0
+        && triangle.v2.position.z < 0.0
+    {
+        return ClipResult::None;
+    }
+
+    ClipResult::One(*triangle)
+}
+
 #[derive(Debug, Clone)]
-pub struct Mesh{
+pub struct Mesh {
     triangles: Vec<UVec3>,
     vertices: Vec<Vertex>,
 }
 
-impl Mesh{
+impl Mesh {
     pub fn new() -> Self {
         Self {
             triangles: Vec::new(),
@@ -20,7 +68,7 @@ impl Mesh{
     pub fn triangles(&self) -> &Vec<UVec3> {
         &self.triangles
     }
-    
+
     pub fn vertices(&self) -> &Vec<Vertex> {
         &self.vertices
     }
@@ -53,7 +101,6 @@ impl Mesh{
         buffer: &mut FrameBuffer,
         z_buffer: &mut Vec<f32>,
         viewport_size: Vec2,
-
     ) {
         for triangle in self.triangles() {
             let vertices = self.get_vertices_from_triangle(*triangle);
@@ -62,18 +109,19 @@ impl Mesh{
             //  If 2 vertices fall inside the box than clip                     (2)
             //      rasterize                                                   (3)
 
-            let triangle = Triangle::new(*vertices[0], *vertices[1], *vertices[2]);
+            let mut triangle = Triangle::new(*vertices[0], *vertices[1], *vertices[2]);
+            let clip_tri = triangle.transform(mvp); // Convert vertex into clip space
 
-            triangle.raster_triangle(
-                mvp,
-                texture,
-                buffer,
-                z_buffer,
-                viewport_size
-            );
+            match cull_triangle_view_frustum(&clip_tri) {
+                ClipResult::None => {
+                    println!("fully clipped!");
+                }
+                ClipResult::One(tri) => {
+                    tri.raster_clipped_triangle(texture, buffer, z_buffer, viewport_size);
+                }
+            }
         }
     }
-    
 }
 
 // for more on struct initialization check Default trait

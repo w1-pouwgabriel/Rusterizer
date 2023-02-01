@@ -1,15 +1,15 @@
-use glam::{Vec2, Vec3};
+use glam::{Vec2, Vec3, Vec4, Vec4Swizzles};
 use std::ops::{Add, Mul, MulAssign, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vertex {
-    pub position: Vec3,
+    pub position: Vec4,
     pub color: Vec3,
     pub uv: Vec2,
 }
 
 impl Vertex {
-    pub fn new(position: Vec3, color: Vec3, uv: Vec2) -> Self {
+    pub fn new(position: Vec4, color: Vec3, uv: Vec2) -> Self {
         Self {
             position,
             color,
@@ -59,17 +59,16 @@ impl MulAssign<f32> for Vertex {
     }
 }
 
-
 #[test]
 fn lerping() {
-use crate::utils; // Only used to do unit testing
+    use crate::utils; // Only used to do unit testing
     let v0 = Vertex {
-        position: glam::vec3(100.0, 100.0, 0.0),
+        position: glam::vec4(100.0, 100.0, 0.0, 1.0),
         color: glam::vec3(0.0, 1.0, 1.0),
         uv: glam::vec2(0.0, 0.0),
     };
     let v1 = Vertex {
-        position: glam::vec3(100.0, 400.0, 0.0),
+        position: glam::vec4(100.0, 400.0, 0.0, 1.0),
         color: glam::vec3(1.0, 0.0, 0.0),
         uv: glam::vec2(0.0, 1.0),
     };

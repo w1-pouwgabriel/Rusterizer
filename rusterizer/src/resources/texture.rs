@@ -28,7 +28,7 @@ impl Texture {
             Self {
                 width: image.width,
                 height: image.height,
-                data, 
+                data,
                 depth: image.depth,
             }
         } else {

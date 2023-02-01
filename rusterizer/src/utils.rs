@@ -1,11 +1,11 @@
 use glam::{Vec2, Vec3};
 
-pub fn to_argb32(a: u8, r: u8, g: u8, b: u8) -> u32{
-    let mut color:u32 = a as u32;
+pub fn to_argb32(a: u8, r: u8, g: u8, b: u8) -> u32 {
+    let mut color: u32 = a as u32;
     color = (color << 8) + r as u32;
     color = (color << 8) + g as u32;
     color = (color << 8) + b as u32;
-    
+
     color
 }
 
@@ -21,7 +21,7 @@ pub fn barycentric_coordinates(
     let m2 = edge_function(point, v0, v1);
     // instead of 3 divisions we can do 1/area *
     let a = 1.0 / area;
-    
+
     if m0 >= 0.0 && m1 >= 0.0 && m2 >= 0.0 {
         Some(glam::vec3(m0 * a, m1 * a, m2 * a))
     } else {
@@ -40,7 +40,7 @@ pub fn index_to_coords(p: usize, width: usize) -> (usize, usize) {
 }
 
 pub fn aabb_check(min: Vec2, max: Vec2, point: Vec2) -> bool {
-    if point.x > min.x && point.y > min.y && point.x < max.x && point.y < max.y{
+    if point.x > min.x && point.y > min.y && point.x < max.x && point.y < max.y {
         return true;
     }
 

@@ -1,25 +1,32 @@
 extern crate minifb;
 
-#[path = "resources/texture.rs"] pub mod texture;
-#[path = "math/transform.rs"] mod transform;
-#[path = "math/boundingbox2D.rs"] mod boundingbox2D;
-mod window;
+#[path = "math/boundingbox2D.rs"]
+mod boundingbox2D;
+#[path = "graphics/camera.rs"]
+mod camera;
+#[path = "graphics/mesh.rs"]
+mod mesh;
+#[path = "resources/texture.rs"]
+pub mod texture;
+#[path = "math/transform.rs"]
+mod transform;
+#[path = "graphics/triangle.rs"]
+mod triangle;
 mod utils;
-#[path = "graphics/triangle.rs"] mod triangle;
-#[path = "graphics/vertex.rs"] mod vertex;
-#[path = "graphics/mesh.rs"] mod mesh;
-#[path = "graphics/camera.rs"] mod camera;
+#[path = "graphics/vertex.rs"]
+mod vertex;
+mod window;
 
+use camera::Camera;
+use mesh::Mesh;
 use minifb::Key;
+use texture::Texture;
 use transform::Transform;
 use triangle::Triangle;
-use window::Window;
 use vertex::Vertex;
-use texture::Texture;
-use mesh::Mesh;
-use camera::Camera;
+use window::Window;
 
-use std::path::{Path};
+use std::path::Path;
 
 const WIDTH: usize = 500;
 const HEIGHT: usize = 500;
@@ -48,34 +55,32 @@ pub fn process_input_camera(window: &minifb::Window, camera: &mut Camera, time: 
 fn main() {
     let mut window = Window::new("Rusterizer - ESC to exit".to_string(), WIDTH, HEIGHT);
 
-    let mut z_buffer;                                               //Maybe add this variable to some sort of graphics pipeline???
-    let texture = Texture::load(Path::new("assets/uv_mapper.jpg"));  //TODO: Add some resource manager
+    let mut z_buffer = vec![f32::INFINITY; WIDTH * HEIGHT]; //Maybe add this variable to some sort of graphics pipeline???
+    let texture = Texture::load(Path::new("assets/uv_mapper.jpg")); //TODO: Add some resource manager
 
     let v0 = Vertex {
-        position: glam::vec3(-1.0, -1.0, 1.0),
+        position: glam::vec4(-1.0, -1.0, 1.0, 1.0),
         color: glam::vec3(0.0, 1.0, 1.0),
         uv: glam::vec2(0.0, 1.0),
     };
     let v1 = Vertex {
-        position: glam::vec3(-1.0, 1.0, 1.0),
+        position: glam::vec4(-1.0, 1.0, 1.0, 1.0),
         color: glam::vec3(1.0, 0.0, 0.0),
         uv: glam::vec2(0.0, 0.0),
     };
     let v2 = Vertex {
-        position: glam::vec3(1.0, 1.0, 1.0),
+        position: glam::vec4(1.0, 1.0, 1.0, 1.0),
         color: glam::vec3(0.0, 1.0, 0.0),
         uv: glam::vec2(1.0, 0.0),
     };
     let v3 = Vertex {
-        position: glam::vec3(1.0, -1.0, 1.0),
+        position: glam::vec4(1.0, -1.0, 1.0, 1.0),
         color: glam::vec3(0.0, 1.0, 1.0),
         uv: glam::vec2(1.0, 1.0),
     };
 
-    let triangles = vec![glam::uvec3(2, 1, 0), glam::uvec3(3, 2, 0)]; 
+    let triangles = vec![glam::uvec3(2, 1, 0), glam::uvec3(3, 2, 0)];
     let vertices = vec![v0, v1, v2, v3];
-
-    let triangle1: Triangle = Triangle { v0: v0, v1: v1, v2: v2 };
 
     let mesh = Mesh::from_vertices(&triangles, &vertices);
 
@@ -143,62 +148,79 @@ fn main() {
 
         let (width, height) = window.frame_buffer().size();
         //Clear buffer
-        z_buffer = vec![f32::INFINITY; width * height];
+        z_buffer.clear();
+        z_buffer.resize(width * height, f32::INFINITY);
+
+        camera.update_settings(
+            None,
+            None,
+            None,
+            Some(width as f32 / height as f32),
+            None,
+            None,
+        );
+
         window.frame_buffer().clear();
 
         process_input_camera(&window.window(), &mut camera, delta_time); //
 
         let window_size = glam::vec2(width as f32, height as f32);
         let parent_local =
-        Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, rot, rot, 0.2))
-            .local(); // Model
-            
+            Transform::from_rotation(glam::Quat::from_euler(glam::EulerRot::XYZ, rot, rot, 0.2))
+                .local(); // Model
+
         let view = camera.view();
         let proj = camera.projection();
 
-        mesh.raster_mesh(        
+        mesh.raster_mesh(
             &(proj * view * parent_local * transform0.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
+            window_size,
+        );
 
-        mesh.raster_mesh(        
+        mesh.raster_mesh(
             &(proj * view * parent_local * transform1.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
-            
-        mesh.raster_mesh(        
+            window_size,
+        );
+
+        mesh.raster_mesh(
             &(proj * view * parent_local * transform2.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
-            
+            window_size,
+        );
+
         mesh.raster_mesh(
             &(proj * view * parent_local * transform3.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
-            
+            window_size,
+        );
+
         mesh.raster_mesh(
             &(proj * view * parent_local * transform4.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
-            
+            window_size,
+        );
+
         mesh.raster_mesh(
             &(proj * view * parent_local * transform5.local()),
             Some(&texture),
             window.frame_buffer(),
             &mut z_buffer,
-            window_size);
+            window_size,
+        );
 
-            rot += 0.05;
+        rot += 0.05;
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window.display();
     }
